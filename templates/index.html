@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Chat App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <meta id='url' data-url1="{{ url }}">
+</head>
+<body>
+    <h1>
+        Web Chat App
+    </h1>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div>
+            {{message}}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <ul id="messages">
+        {% if messages %}
+        {% for msg in messages %}
+            <li>{{ msg.message }}</li>
+        {% endfor %}
+        {%endif%}
+    </ul>
+    <input type="text" id="myMessage">
+    <button id="sendbutton">Send</button>
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var url = $('#url').data('url1')    
+            var socket = io.connect(url)
+            
+            socket.on('connect', function(){
+                socket.send('New User has connected!');
+            });
+
+            socket.on('message', function(msg){
+                $('#messages').append('<li>'+msg+'</li>');
+                console.log('Received')
+            });
+
+            $('#sendbutton').on('click', function(){
+                socket.send($('#myMessage').val());
+                $("#myMessage").val('');
+            });
+
+        });
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
